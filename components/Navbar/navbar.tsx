@@ -13,8 +13,8 @@ import {
   Moon,
   Users,
   CalendarPlus2,
-  Heart,
   Plus,
+  Stethoscope,
 } from "lucide-react";
 import {
   Tooltip,
@@ -157,10 +157,10 @@ const NavItem: React.FC<NavItemProps> = ({
 const navItems: NavItemProps[] = [
   { href: "/", icon: <Home />, label: "Inicio" },
   {
-    href: "/facturacion",
+    href: "/pacientes",
     icon: <Users />,
     label: "Pacientes",
-    featureFlag: "enableFacturacion",
+    featureFlag: "enablePacientes",
     subItems: [
       { href: "/pacientes/general", label: "General" },
       { href: "/pacientes/documentos", label: "Documentos" },
@@ -170,7 +170,7 @@ const navItems: NavItemProps[] = [
     href: "/citas",
     icon: <CalendarPlus2 />,
     label: "Citas",
-    featureFlag: "enableVentas",
+    featureFlag: "enableCitas",
   },
   {
     href: "/reportes",
@@ -211,15 +211,9 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="flex flex-col h-screen w-16 md:w-64 border-r bg-primary text-primary-foreground">
-      <div className="flex flex-col items-center py-4">
+      <div className="flex flex-col items-center py-6">
         <Link href="/">
-          <Image
-            src="/app/Care+.png"
-            alt="Logo"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
+          <Stethoscope className="h-12 w-12 sm:h-16 sm:w-16" />
         </Link>
       </div>
       <ul className="space-y-2 py-4 flex-grow">

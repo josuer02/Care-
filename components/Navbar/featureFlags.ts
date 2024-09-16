@@ -1,16 +1,14 @@
 interface FeatureFlags {
     [key: string]: boolean;
-    enableConsultas: boolean;
-    enableFacturacion: boolean;
-    enableVentas: boolean;
+    enablePacientes: boolean;
+    enableCitas: boolean;
     enableReportes: boolean;
     enableManuales: boolean;
   }
 
 export const featureFlags = {
-    enableConsultas: true,
-    enableFacturacion: true,
-    enableVentas: true,
+    enablePacientes: true,
+    enableCitas: true,
     enableReportes: true,
     enableManuales: true
 };

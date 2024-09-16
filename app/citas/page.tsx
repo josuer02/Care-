@@ -1,5 +1,5 @@
 import { AppointmentForm } from "@/components/citas/citasForm";
-import { AppointmentList } from "@/components/citas/citasList";
+import AppointmentList from "@/components/citas/citasList";
 import React from "react";
 
 export default function CitasPage() {
@@ -11,7 +11,7 @@ export default function CitasPage() {
         </div>
         <div>
           {/* <h2 className="text-xl font-semibold mb-2">Upcoming Appointments</h2> */}
-          {/* <AppointmentList /> */}
+          {<AppointmentList />}
         </div>
       </div>
     </div>
