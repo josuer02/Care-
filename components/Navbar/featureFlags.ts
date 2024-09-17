@@ -7,8 +7,8 @@ interface FeatureFlags {
   }
 
 export const featureFlags = {
-    enablePacientes: true,
+    enablePacientes: false,
     enableCitas: true,
-    enableReportes: true,
-    enableManuales: true
+    enableReportes: false,
+    enableManuales: false
 };
