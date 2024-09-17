@@ -225,7 +225,7 @@ const Navbar: React.FC = () => {
       </ul>
       {mounted && (
         <div className="p-2 flex justify-center">
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
@@ -237,7 +237,7 @@ const Navbar: React.FC = () => {
               <Sun className="h-4 w-4" />
             )}
             <span className="sr-only">Toggle theme</span>
-          </Button>
+          </Button> */}
         </div>
       )}
     </nav>
