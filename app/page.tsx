@@ -6,29 +6,33 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MessageCircle, Phone, Video } from "lucide-react";
+import { Calendar, MessageCircle, Video, Activity, Bell } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
-const features = [
-  { icon: <Calendar className="h-6 w-6" />, title: "Schedule Appointments" },
-  { icon: <MessageCircle className="h-6 w-6" />, title: "Chat with Doctors" },
-  { icon: <Video className="h-6 w-6" />, title: "Video Consultations" },
-  { icon: <Phone className="h-6 w-6" />, title: "24/7 Support" },
-];
-
-const testimonials = [
+const upcomingAppointments = [
   {
-    name: "Sarah L.",
-    avatar: "/avatar1.jpg",
-    text: "Care+ has been a lifesaver! Quick and easy consultations from home.",
+    id: 1,
+    doctor: "Dr. Emily Chen",
+    specialty: "Cardiologist",
+    date: "2023-09-20",
+    time: "10:00 AM",
   },
   {
-    name: "John D.",
-    avatar: "/avatar2.jpg",
-    text: "The doctors are knowledgeable and caring. Highly recommend!",
+    id: 2,
+    doctor: "Dr. Michael Lee",
+    specialty: "Dermatologist",
+    date: "2023-09-25",
+    time: "2:30 PM",
   },
 ];
 
-export default function Home() {
+const healthMetrics = [
+  { name: "Blood Pressure", value: "120/80", status: "normal" },
+  { name: "Heart Rate", value: "72 bpm", status: "normal" },
+  { name: "Blood Sugar", value: "95 mg/dL", status: "normal" },
+];
+
+export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <header className="bg-white shadow-md">
@@ -41,6 +45,15 @@ export default function Home() {
           >
             Care+
           </motion.h1>
+          <nav className="flex items-center space-x-4">
+            <Button variant="ghost" size="icon">
+              <Bell className="h-5 w-5" />
+            </Button>
+            <Avatar>
+              <AvatarImage src="/avatar-user.jpg" alt="User" />
+              <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+          </nav>
         </div>
       </header>
 
@@ -48,114 +61,107 @@ export default function Home() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.5 }}
+          className="mb-12"
         >
-          <h2 className="text-4xl font-bold text-blue-900 mb-4">
-            Welcome to Care+
+          <h2 className="text-3xl font-bold text-blue-900 mb-4">
+            Welcome back,
           </h2>
-          <p className="text-xl text-gray-600 mb-8">
-            Your personal virtual doctor assistant
+          <p className="text-xl text-gray-600">
+            Here's your health summary for today.
           </p>
-          <Button size="lg" className="rounded-full text-lg px-8 py-4">
-            Get Started
-          </Button>
         </motion.section>
 
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mb-16"
-        >
-          <h3 className="text-2xl font-semibold text-blue-900 mb-8 text-center">
-            Our Features
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Card className="text-center hover:shadow-lg transition-shadow duration-300">
-                  <CardHeader>
-                    <div className="mx-auto bg-blue-100 rounded-full p-3 w-16 h-16 flex items-center justify-center text-blue-600">
-                      {feature.icon}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <motion.section 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Calendar className="mr-2" />
+                  Upcoming Appointments
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {upcomingAppointments.map((appointment) => (
+                  <div key={appointment.id} className="mb-4 last:mb-0">
+                    <p className="font-semibold">{appointment.doctor}</p>
+                    <p className="text-sm text-gray-600">{appointment.specialty}</p>
+                    <p className="text-sm text-gray-600">{appointment.date} at {appointment.time}</p>
+                  </div>
+                ))}
+                <Button className="w-full mt-4">Schedule New Appointment</Button>
+              </CardContent>
+            </Card>
+          </motion.section>
+
+          <motion.section 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Activity className="mr-2" />
+                  Health Metrics
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {healthMetrics.map((metric, index) => (
+                  <div key={index} className="mb-4 last:mb-0">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold">{metric.name}</span>
+                      <Badge variant={metric.status === "normal" ? "success" : "destructive"}>
+                        {metric.status}
+                      </Badge>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <h4 className="font-semibold">{feature.title}</h4>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+                    <p className="text-2xl font-bold mb-1">{metric.value}</p>
+                    <Progress value={75} className="h-2" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </motion.section>
+        </div>
 
-        <motion.section
+        <motion.section 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
-          className="mb-16"
+          className="mt-12"
         >
-          <h3 className="text-2xl font-semibold text-blue-900 mb-8 text-center">
-            What Our Users Say
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <Card
-                key={index}
-                className="hover:shadow-lg transition-shadow duration-300"
-              >
-                <CardContent className="flex items-start space-x-4 pt-6">
-                  <Avatar>
-                    <AvatarImage
-                      src={testimonial.avatar}
-                      alt={testimonial.name}
-                    />
-                    <AvatarFallback>
-                      {testimonial.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <CardTitle className="mb-2">{testimonial.name}</CardTitle>
-                    <p className="text-gray-600">{testimonial.text}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <h3 className="text-2xl font-semibold text-blue-900 mb-6">Quick Actions</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <Button variant="outline" className="h-auto py-4 flex flex-col items-center">
+              <MessageCircle className="h-8 w-8 mb-2" />
+              <span>Chat with a Doctor</span>
+            </Button>
+            <Button variant="outline" className="h-auto py-4 flex flex-col items-center">
+              <Video className="h-8 w-8 mb-2" />
+              <span>Start Video Consultation</span>
+            </Button>
+            <Button variant="outline" className="h-auto py-4 flex flex-col items-center">
+              <Activity className="h-8 w-8 mb-2" />
+              <span>View Health Records</span>
+            </Button>
           </div>
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="text-center"
-        >
-          <h3 className="text-2xl font-semibold text-blue-900 mb-4">
-            Ready to get started?
-          </h3>
-          <p className="text-gray-600 mb-8">
-            Join thousands of satisfied users and take control of your health
-            today!
-          </p>
-          <Button size="lg" className="rounded-full text-lg px-8 py-4">
-            Sign Up Now
-          </Button>
-        </motion.section>
+        </motion.section> */}
       </main>
 
       <footer className="bg-blue-900 text-white py-8 mt-12">
         <div className="container mx-auto px-4 flex justify-between items-center">
           <p>&copy; 2024 Care+. All rights reserved.</p>
           <div className="flex space-x-4">
-            <Badge variant="secondary">Privacy Policy</Badge>
-            <Badge variant="secondary">Terms of Service</Badge>
+            <Badge variant="secondary" className="cursor-pointer">
+              Help
+            </Badge>
+            <Badge variant="secondary" className="cursor-pointer">
+              Settings
+            </Badge>
           </div>
         </div>
       </footer>
