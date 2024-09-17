@@ -27,20 +27,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
-interface Appointment {
-  id: number;
-  date: string;
-  time: string;
-  patient: {
-    name: string;
-  };
-  doctor: {
-    name: string;
-  };
-  notes?: string;
-  isFirstVisit: boolean;
-}
+import { Appointment } from "@/types/appointment";
+import { toast } from "react-toastify";
+import { AppointmentForm } from "@/components/citas/citasForm";
 
 export default function CitasCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -84,6 +73,41 @@ export default function CitasCalendar() {
     ];
     return colors[index % colors.length];
   };
+
+  const handleCancelAppointment = async (appointmentId: number) => {
+    try {
+      const response = await fetch(`/api/appointments/${appointmentId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setAppointments(appointments.filter((apt) => apt.id !== appointmentId));
+        toast.success("Cita cancelada exitosamente");
+      } else {
+        const errorData = await response.json();
+        console.error("Error canceling appointment:", errorData);
+        toast.error("Error al cancelar la cita");
+      }
+    } catch (error) {
+      console.error("Error canceling appointment:", error);
+      toast.error("Error al cancelar la cita");
+    }
+  };
+
+  const [appointmentToReschedule, setAppointmentToReschedule] =
+    useState<Appointment | null>(null);
+
+  const handleRescheduleAppointment = (appointment: Appointment) => {
+    if (appointment.doctor && appointment.patient) {
+      setAppointmentToReschedule(appointment);
+    } else {
+      console.error("Appointment data is incomplete", appointment);
+      toast.error(
+        "No se puede reprogramar esta cita porque falta informaci n del doctor o paciente"
+      );
+    }
+  };
+
+  // Agrega esto al final del componente, justo antes del cierre del div principal
 
   return (
     <div className="container mx-auto p-4">
@@ -178,7 +202,7 @@ export default function CitasCalendar() {
                           <div className="grid gap-4">
                             <div className="space-y-2">
                               <h4 className="font-medium leading-none">
-                                {apt.patient.name}{" "}
+                                {apt.patient?.name || "Paciente"}{" "}
                                 {apt.isFirstVisit && "(Primera visita)"}
                               </h4>
                               <p className="text-sm text-muted-foreground">
@@ -191,7 +215,7 @@ export default function CitasCalendar() {
                             <div className="flex items-center gap-2">
                               <User className="h-4 w-4 text-muted-foreground" />
                               <span className="text-sm">
-                                Dr. {apt.doctor.name}
+                                Dr. {apt.doctor?.name || "No asignado"}
                               </span>
                             </div>
                             {apt.notes && (
@@ -199,6 +223,22 @@ export default function CitasCalendar() {
                                 {apt.notes}
                               </div>
                             )}
+                            <div className="flex justify-end space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRescheduleAppointment(apt)}
+                              >
+                                Reagendar
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleCancelAppointment(apt.id)}
+                              >
+                                Cancelar
+                              </Button>
+                            </div>
                           </div>
                         </PopoverContent>
                       </Popover>
@@ -210,6 +250,32 @@ export default function CitasCalendar() {
           </div>
         </CardContent>
       </Card>
+
+      {appointmentToReschedule && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-md w-full">
+            <AppointmentForm
+              initialData={appointmentToReschedule}
+              onClose={() => setAppointmentToReschedule(null)}
+              onReschedule={(updatedAppointment) => {
+                setAppointments((prevAppointments) =>
+                  prevAppointments.map((apt) =>
+                    apt.id === updatedAppointment.id
+                      ? {
+                          ...apt,
+                          ...updatedAppointment,
+                          doctor: updatedAppointment.doctor || apt.doctor,
+                          patient: updatedAppointment.patient || apt.patient,
+                        }
+                      : apt
+                  )
+                );
+                setAppointmentToReschedule(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

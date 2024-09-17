@@ -5,7 +5,6 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     
-    // Primero, busca si el paciente ya existe
     let patient = await prisma.patient.findFirst({
       where: { email: body.patientEmail },
     })
@@ -13,7 +12,6 @@ export async function POST(request: Request) {
     let isFirstVisit = false;
 
     if (!patient) {
-      // Si el paciente no existe, créalo
       patient = await prisma.patient.create({
         data: {
           name: body.patientName,
@@ -24,7 +22,6 @@ export async function POST(request: Request) {
       isFirstVisit = true;
     }
 
-    // Ahora crea la cita usando el paciente existente o recién creado
     const appointment = await prisma.appointment.create({
       data: {
         patient: {
@@ -46,6 +43,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Error creating appointment' }, { status: 500 })
   }
 }
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const date = searchParams.get('date');
@@ -53,11 +51,10 @@ export async function GET(request: Request) {
 
   if (date && doctorId) {
     try {
-      // Convertir la fecha seleccionada al inicio y fin del día en UTC
       const startDate = new Date(date);
       const endDate = new Date(date);
-      startDate.setUTCHours(0, 0, 0, 0);  // Inicio del día en UTC
-      endDate.setUTCHours(23, 59, 59, 999);  // Fin del día en UTC
+      startDate.setUTCHours(0, 0, 0, 0);
+      endDate.setUTCHours(23, 59, 59, 999);
 
       const appointments = await prisma.appointment.findMany({
         where: {
@@ -97,5 +94,52 @@ export async function GET(request: Request) {
         { status: 500 }
       );
     }
+  }
+}
+
+export async function DELETE(request: Request) {
+  const url = new URL(request.url);
+  const id = url.pathname.split('/').pop();
+
+  if (!id) {
+    return NextResponse.json({ error: 'Appointment ID is required' }, { status: 400 });
+  }
+
+  try {
+    await prisma.appointment.delete({
+      where: { id: parseInt(id) },
+    });
+    return NextResponse.json({ message: 'Appointment cancelled successfully' });
+  } catch (error) {
+    console.error('Error cancelling appointment:', error);
+    return NextResponse.json({ error: 'Error cancelling appointment' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return NextResponse.json({ error: 'Appointment ID is required' }, { status: 400 });
+  }
+
+  try {
+    const body = await request.json();
+    const updatedAppointment = await prisma.appointment.update({
+      where: { id: parseInt(id) },
+      data: {
+        date: new Date(body.date),
+        time: body.time,
+        doctor: {
+          connect: { id: body.doctorId },
+        },
+        notes: body.notes,
+      },
+    });
+    return NextResponse.json(updatedAppointment);
+  } catch (error) {
+    console.error('Error updating appointment:', error);
+    return NextResponse.json({ error: 'Error updating appointment' }, { status: 500 });
   }
 }
